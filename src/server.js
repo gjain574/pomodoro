@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({
 app.use('/', require('./routes/index.js'));
 
 // run http server here
-http.listen(3000, 'localhost', function(){
-  console.log('listening on *:3000');
+http.listen(4000, 'localhost', function(){
+  console.log('listening on *:4000');
 });
 
