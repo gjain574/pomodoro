@@ -1,5 +1,11 @@
 
-# Getting Started Steps
+# Pomodoro Timer
+
+<img width="1440" alt="image" src="https://user-images.githubusercontent.com/19173627/135675962-ae9175cb-5a56-413c-a309-c008b5ef958a.png">
+
+
+
+## Getting Started
 
 - Need Docker version >= 20.10.8
 - Run in terminal : 'docker-compose up --build -d'
