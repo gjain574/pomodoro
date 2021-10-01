@@ -43,7 +43,7 @@ const fetchTimer = async (id) => {
 module.exports.fetchTimer = fetchTimer;
 
 // default duration is 25 mins ~ 1500 seconds
-const createTimer = async (name, duration = 1500, webhook_url = '') => {
+const createTimer = async (name = '', duration = 1500, webhook_url = '') => {
 	const id = uuidv4();
 	try {
 		const { rows } = await pgPoolClient.query(`INSERT INTO timers 
@@ -72,7 +72,7 @@ const createTimer = async (name, duration = 1500, webhook_url = '') => {
 		return rows[0]
 	}
 	catch(error) {
-		console.log(error)
+		return error.toString()
 	}
 }
 
@@ -89,33 +89,49 @@ module.exports.fetchTimers = fetchTimers;
 
 // The below function will be responsible for both resuming and pausing a timer.
 const updateTimer = async (id, status) => {
+	try{ 
+		const response_data = await pgPoolClient.query(`SELECT * FROM timers WHERE id = '${id}';`);
 
-	const response_data = await pgPoolClient.query(`SELECT * FROM timers WHERE id = '${id}';`);
+		if (response_data.rowCount === 1){
+			const current_row = response_data.rows[0];
 
-	if (response_data.rowCount === 1){
-		const { last_updated_at, total_time_clocked } = response_data.rows[0];
-		const updated_total_time_clocked = Moment().unix() - Moment(last_updated_at).unix() + total_time_clocked;
-		let query;
-		if (status === "paused"){
-			query = `
-				UPDATE timers 
-				SET status = '${status}', last_updated_at = now(), total_time_clocked = ${updated_total_time_clocked}
-				WHERE id = '${id}'
-				RETURNING *;
-			`;
+			if (current_row.status === "completed"){
+				throw new Error('timer has already been completed');
+			}
+
+			const { last_updated_at, total_time_clocked } = current_row;
+			const updated_total_time_clocked = Moment().unix() - Moment(last_updated_at).unix() + total_time_clocked;
+			let query;
+			if (status === "paused"){
+				query = `
+					UPDATE timers 
+					SET status = '${status}', last_updated_at = now(), total_time_clocked = ${updated_total_time_clocked}
+					WHERE id = '${id}'
+					RETURNING *;
+				`;
+			}
+			else if (status === "resumed"){
+				query = `
+					UPDATE timers 
+					SET status = '${status}', last_updated_at = now()
+					WHERE id = '${id}'
+					RETURNING *;
+				`;
+			}
+			else {
+				throw new Error('incorrect status value');	
+			}
+		
+			const { rows } = await pgPoolClient.query(query);
+			const updated_rows = calculateTimeRemaining(rows);
+			return updated_rows[0]
 		}
-		else if (status === "resumed"){
-			query = `
-				UPDATE timers 
-				SET status = '${status}', last_updated_at = now()
-				WHERE id = '${id}'
-				RETURNING *;
-			`;
+		else{
+			throw new Error('resource does not exists');
 		}
-	
-		const { rows } = await pgPoolClient.query(query);
-		const updated_rows = calculateTimeRemaining(rows);
-		return updated_rows[0]
+	}
+	catch(error) {
+		throw error;
 	}
 }
 

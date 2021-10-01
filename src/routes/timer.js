@@ -1,17 +1,22 @@
 var router = require('express').Router();
 const Timers = require('../models/timers');
-
-// import middleware functions here
-// var logUserAction = middlewares.logUserAction;
   
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
-    const timer = await Timers.fetchTimer(id);
 
-    return res.json({
-        'status' : 'success',
-        'timer' : timer
-    });
+    try {
+        const timer = await Timers.fetchTimer(id);
+        return res.json({
+            'status' : 'success',
+            'timer' : timer
+        });
+    }
+    catch(error) {
+        return res.status(404).json({
+            'status' : 'fail',
+            'error' : 'resource does not exists'
+        });
+    }
 });
 
 router.get('/', async (req, res) => {
@@ -38,22 +43,38 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const { status } = req.body;
-    const timer = await Timers.updateTimer(id, status);
-
-    return res.json({
-        'status' : 'success',
-        'timer' : timer
-    });
+    try {
+        const { status } = req.body;
+        const timer = await Timers.updateTimer(id, status);
+    
+        return res.json({
+            'status' : 'success',
+            'timer' : timer
+        });
+    }
+    catch(error) {
+        return res.status(400).json({
+            'status' : 'fail',
+            'error' : error.toString()
+        });
+    }
 });
 
 router.delete('/:id', async (req, res) => {
-    const { id } = req.params;
-    const response = await Timers.deleteTimer(id);
-
-    return res.json({
-        'status' : 'success'
-    });
+    try{
+        const { id } = req.params;
+        const response = await Timers.deleteTimer(id);
+    
+        return res.json({
+            'status' : 'success'
+        });
+    }
+    catch(error) {
+        return res.status(404).json({
+            'status' : 'fail',
+            'error' : 'resource does not exists'
+        });
+    }
 });
 
 module.exports = router;
