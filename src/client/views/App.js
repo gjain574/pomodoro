@@ -1,18 +1,52 @@
-import React from 'react';
-import styled, { css } from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import Timer from '../components/Timer';
+import AddTimer from '../components/AddTimer';
+
+const axios = require('axios').default;
 
 const Wrapper = styled.div`
-  display: flex;
-  justify-content: center;
   background: #F1F1F1;
-  padding: 32px;
+  padding: 32px 200px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
 `;
 
 const App = () => {
+  const [ timers, setTimers ] = useState([]);
+
+  const fetchTimers = async () => {
+    const response = await axios.get('/api/v1/timers');
+    if (response.data.status === 'success'){
+      setTimers(response.data.timers)
+    }
+  }
+
+  useEffect(() => {
+    fetchTimers();
+  }, []);
+
   return (
     <Wrapper>
-      <Timer />
+      <AddTimer handleOnAdd={() => { fetchTimers() }} />
+      { 
+        timers.length > 0 ? ( <h3>Timers List ⏱️</h3> ) : null
+      }
+      {
+        timers.map(({ id, name, duration, status }, index) => {
+          return (<Timer 
+                    key={ index } 
+                    id={id} 
+                    name={ name } 
+                    status={ status }
+                    timeLeft={ duration*1000 } 
+                    refreshState={() => { fetchTimers() }}
+                  />)
+        })
+      }
     </Wrapper>
   );
 }
