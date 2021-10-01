@@ -33,7 +33,7 @@ const App = () => {
     <Wrapper>
       <AddTimer handleOnAdd={() => { fetchTimers() }} />
       { 
-        timers.length > 0 ? ( <h3>Timers List ⏱️</h3> ) : null
+        timers.length > 0 ? ( <h3>Timers List ⏱️</h3> ) : <h3>Create some Timers ☝️</h3>
       }
       {
         timers.map(({ id, name, duration, time_remaining, status }, index) => {
