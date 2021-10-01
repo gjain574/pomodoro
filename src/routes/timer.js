@@ -30,15 +30,24 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const name = req.body.name;
-    const duration = req.body.duration;
-    const webhook_url = req.body.webhook_url;
-    const timer = await Timers.createTimer(name, duration, webhook_url);
 
-    return res.json({
-        'status' : 'success',
-        'timer' : timer
-    });
+    try{
+        const name = req.body.name;
+        const duration = req.body.duration;
+        const webhook_url = req.body.webhook_url;
+        const timer = await Timers.createTimer(name, duration, webhook_url);
+
+        return res.json({
+            'status' : 'success',
+            'timer' : timer
+        });
+    }
+    catch(error) {
+        return res.json({
+            'status' : 'fail',
+            'error' : error.toString()
+        });
+    }
 });
 
 router.put('/:id', async (req, res) => {
