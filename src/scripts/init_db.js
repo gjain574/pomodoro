@@ -14,6 +14,7 @@ const timers = `CREATE TABLE timers (
     duration integer,
     total_time_clocked integer,
 	last_updated_at timestamp NOT NULL DEFAULT now(),
+    webhook_url text,
     status StatusEnum DEFAULT NULL
 );`
 
@@ -63,9 +64,9 @@ const createTables = async () => {
         return pgPoolClient.query(create_table_query)
     }
 
-    const grantPermissions = (table_name) => {
-        return pgPoolClient.query(`GRANT ALL PRIVILEGES ON TABLE ${table_name} to "group";`)
-    }
+    // const grantPermissions = (table_name) => {
+    //     return pgPoolClient.query(`GRANT ALL PRIVILEGES ON TABLE ${table_name} to "group";`)
+    // }
 
     const create_enum_promises = [StatusEnumQuery, ActionEnumQuery].map((enum_query) => {
         return createEnumType(enum_query)
@@ -76,11 +77,11 @@ const createTables = async () => {
     await createTable(timers)
     await createTable(actions)
 
-    const grant_permission_promises = TABLES_NAMES.map((table_name) => {
-        return grantPermissions(table_name);
-    })
+    // const grant_permission_promises = TABLES_NAMES.map((table_name) => {
+    //     return grantPermissions(table_name);
+    // })
 
-    await Promise.all(grant_permission_promises);
+    // await Promise.all(grant_permission_promises);
 
     console.log("created datatables");
 }
