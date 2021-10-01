@@ -5,8 +5,8 @@ var path = require('path');
 var app = express();
 var http = require('http').Server(app);
 
-// app.use(express.static(path.resolve(__dirname, '../client/dist')));
-// app.use(express.static(path.resolve(__dirname, '../client/public')));
+app.use(express.static(path.resolve(__dirname, '../build')));
+app.use(express.static(path.resolve(__dirname, '../public')));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
