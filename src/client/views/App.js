@@ -36,13 +36,14 @@ const App = () => {
         timers.length > 0 ? ( <h3>Timers List ⏱️</h3> ) : null
       }
       {
-        timers.map(({ id, name, duration, status }, index) => {
+        timers.map(({ id, name, duration, time_remaining, status }, index) => {
           return (<Timer 
                     key={ index } 
                     id={id} 
                     name={ name } 
                     status={ status }
-                    timeLeft={ duration*1000 } 
+                    timeLeft={ time_remaining*1000 }
+                    duration = { duration } 
                     refreshState={() => { fetchTimers() }}
                   />)
         })
