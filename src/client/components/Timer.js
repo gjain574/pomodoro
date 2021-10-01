@@ -67,13 +67,15 @@ const Button = styled(FontAwesomeIcon)`
     }
 `;
 
-const timeRenderer = ({ hours, minutes, seconds, completed }) => {
+const timeRenderer = (time_data) => {
+    const { hours, minutes, seconds, completed } = time_data;
     return <Counter>{ hours } : { minutes } : { seconds }</Counter>;
 };
 
-const Timer = ({ id, name = '', status, timeLeft = 0, refreshState }) => {
+const Timer = ({ id, name = '', status, timeLeft = 0, duration, refreshState }) => {
 
     const [ timerStatus, setTimerStatus ] = useState(status);
+    const [ timerRemaining, setTimerRemaining ] = useState(timeLeft);
     const clockRef = useRef();
 
     const handlePause = async (id) => {
@@ -82,8 +84,9 @@ const Timer = ({ id, name = '', status, timeLeft = 0, refreshState }) => {
         });
 
         if (data.status === "success" && data.timer.status === "paused"){
-            clockRef.current.pause();
             setTimerStatus('paused');
+            setTimerRemaining(data.timer.time_remaining*1000);
+            clockRef.current.pause();
         }
     }
 
@@ -93,8 +96,9 @@ const Timer = ({ id, name = '', status, timeLeft = 0, refreshState }) => {
         });
 
         if (data.status === "success" && data.timer.status === "resumed"){
-            clockRef.current.start();
             setTimerStatus('resumed');
+            setTimerRemaining(data.timer.time_remaining*1000);
+            clockRef.current.start();
         }
     }
 
@@ -108,12 +112,19 @@ const Timer = ({ id, name = '', status, timeLeft = 0, refreshState }) => {
             <Name>{ name }</Name>
             <RightBar>
                 <Countdown 
-                    date={Date.now() + timeLeft}
-                    renderer={timeRenderer}
+                    date={ timerStatus === "paused" ? ( timerRemaining ) : ( Date.now() + timerRemaining ) }
+                    controlled={ timerStatus === "paused" }
+                    renderer={ timeRenderer }
                     ref={clockRef}
                 />
                 <Controls>
-                    <Button icon={faPauseCircle} active={(timerStatus === 'paused').toString()} onClick={() => { handlePause(id) }} />
+                    {
+                        timerStatus !== "completed" ? (
+                            <Button icon={faPauseCircle} active={(timerStatus === 'paused').toString()} onClick={() => { handlePause(id) }} />
+                        )
+                        :
+                        null
+                    }
                     {
                         ( timerStatus === "paused" || timerStatus === "resumed" ) ? (
                             <Button icon={faPlayCircle} active={(timerStatus ==='resumed').toString()} onClick={() => { handleStart(id) }} />
