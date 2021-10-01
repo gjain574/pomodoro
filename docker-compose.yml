@@ -1,0 +1,39 @@
+--- 
+services: 
+  pomodoro-app: 
+    build: 
+      context: "."
+      dockerfile: .Dockerfile
+    container_name: pomodoro-app
+    depends_on: 
+      postgres: 
+        condition: service_healthy
+    environment: 
+      DATABASE_URL: "postgresql://postgres:admin@postgres:5432/postgres"
+      NODE_ENV: development
+      PORT: 4000
+    ports: 
+      - "4000:4000"
+  postgres: 
+    container_name: postgres
+    environment: 
+      PGUSER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: postgres
+    healthcheck: 
+      interval: 10s
+      retries: 5
+      test: 
+        - CMD-SHELL
+        - "pg_isready && su postgres"
+      timeout: 5s
+    image: "postgres:13.4"
+    ports: 
+      - "5432:5432"
+    restart: always
+    volumes: 
+      - "pg_data:/var/lib/postgresql/data/"
+version: "3"
+volumes: 
+  pg_data: ~
