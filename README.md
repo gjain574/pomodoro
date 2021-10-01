@@ -3,7 +3,11 @@
 
 <img width="1440" alt="image" src="https://user-images.githubusercontent.com/19173627/135675962-ae9175cb-5a56-413c-a309-c008b5ef958a.png">
 
+## What's Included ?
 
+- API 
+- React Interface
+- Timer Scheduler ( marks timer as Completed + notify via webhook )
 
 ## Getting Started
 
