@@ -16,7 +16,6 @@ app.use(bodyParser.urlencoded({
 app.use('/', require('./routes/index.js'));
 
 // run http server here
-http.listen(4000, 'localhost', function(){
+http.listen(4000, 'pomodoro-app', function(){
   console.log('listening on *:4000');
 });
-

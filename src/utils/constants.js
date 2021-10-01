@@ -1,6 +1,6 @@
 const PG = {
   USER: 'postgres',
-  HOST: 'localhost',
+  HOST: 'postgres',
   DATABASE: 'pomodoro',
   DEFAULT_DATABASE: 'postgres',
   PASSWORD: 'admin',
